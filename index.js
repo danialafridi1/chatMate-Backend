@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 const compresion = require('compression');
 const fileupload = require('express-fileupload');
 const cors = require('cors');
+const logger = require('./configs/logger');
 const app = express()
 
 
@@ -42,4 +43,4 @@ app.use(cors(
 app.use(routes);
 const PORT = process.env.PORT || 4000;
 
-app.listen(PORT, () => console.log(`Example app listening on port ${PORT}!`))
+app.listen(PORT, () => logger.info(`server is listening at ${PORT}...!`))
