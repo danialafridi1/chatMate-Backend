@@ -9,6 +9,8 @@ const compresion = require('compression');
 const fileupload = require('express-fileupload');
 const cors = require('cors');
 const logger = require('./configs/logger');
+const createhttprouteError = require('http-errors');
+
 const app = express()
 
 
@@ -41,6 +43,44 @@ app.use(cors(
 ))
 // implement routes 
 app.use(routes);
-const PORT = process.env.PORT || 4000;
 
-app.listen(PORT, () => logger.info(`server is listening at ${PORT}...!`))
+// error handler
+app.use(async (req, res, next) => {
+    next(createhttprouteError.NotFound("This route does not exit."));
+});
+
+app.use(async (err, req, res, next) => {
+    const statusCode = err.status || 500;
+    const errorMessage = err.message || 'Internal Server Error';
+    res.status(statusCode).json({ error: {status :err.status || 500,
+        message:errorMessage} });
+});
+const PORT = process.env.PORT || 4000;
+let server;
+server=app.listen(PORT, () => {
+    logger.info(`server is listening at ${PORT}...!`);
+  
+})
+
+// unhandle uncaugh error
+const exitHandler =()=>{
+    if (server) {
+        logger.info("Server is closed");
+        process.exit(1)
+    } else {
+        process.exit(1)
+    }
+}
+const unExpectedErrorHandler=(error)=>{
+    logger.error(error)
+    exitHandler();
+    
+}
+process.on("uncaughtException",unExpectedErrorHandler);
+process.on("unhandledRejection",unExpectedErrorHandler);
+process.on("SIGTERM",()=>{
+    if (server) {
+        logger.info("Server is closed");
+        process.exit(1)
+    } 
+})

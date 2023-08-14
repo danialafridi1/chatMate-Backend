@@ -1,11 +1,9 @@
 const express = require('express');
+const createhttprouteError = require('http-errors');
 
 const router = new express.Router();
 router.get("/test",(req,res) =>{
-    res.status(200).send({
-        status : true,
-        message : "Hello world"
-    })
+    throw createhttprouteError.BadRequest("Bad Request");
 })
 
 module.exports = router;
