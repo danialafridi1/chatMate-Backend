@@ -8,15 +8,17 @@ const cookieParser = require('cookie-parser');
 const compresion = require('compression');
 const fileupload = require('express-fileupload');
 const cors = require('cors');
-const logger = require('./configs/logger');
+const logger = require('./config/logger');
 const createhttprouteError = require('http-errors');
+const { default: mongoose } = require('mongoose');
+require('./config/database.config').datbaseConfig()
 
 const app = express()
 
 
 // using morgan middleware
 if (process.env.NODE_ENV !== "production") {
-    app.use(morgan('combined'));
+    app.use(morgan('dev'));
 }
 
 // adding helmet 
@@ -84,3 +86,13 @@ process.on("SIGTERM",()=>{
         process.exit(1)
     } 
 })
+
+mongoose.connection.on('error',(err)=>{
+    logger.error(`MongoDb connection error ${err}`)
+    process.exit(1)
+
+})
+
+if (process.env.NODE_ENV !== "production") {
+    mongoose.set('debug',true);
+}

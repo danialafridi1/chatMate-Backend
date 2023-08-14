@@ -1,9 +1,13 @@
 const express = require('express');
-const createhttprouteError = require('http-errors');
+const authRoute = require('./auth.routes');
+const trimReq = require('trim-request')
 
 const router = new express.Router();
-router.get("/test",(req,res) =>{
-    throw createhttprouteError.BadRequest("Bad Request");
+router.use("/auth",authRoute);
+router.get("/",trimReq.all,(req,res) =>{
+    res.status(200).send({
+        message : "Hello Welcome to ChatMate"
+    })
 })
 
 module.exports = router;
