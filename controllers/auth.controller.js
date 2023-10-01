@@ -1,5 +1,7 @@
-const { createUser } = require("../services/auth.services");
-const {generateToken} = require('../services/token.services');
+const createHttpError = require("http-errors");
+const { createUser,signUser } = require("../services/auth.services");
+const {generateToken,verifyToken} = require('../services/token.services');
+const { findUser } = require("../services/user.services");
 
 exports.register=async(req,res,next)=>{
     try {
@@ -46,15 +48,45 @@ res.status(201).send({
 
 exports.login=async(req,res,next)=>{
     try {
-        
-        
+        const {email,password} = req.body;
+        const user =  await signUser(email,password);
+        const access_Token = await generateToken({userId:user._id},"1d",process.env.ACCESS_TOKEN_SECERT);
+const refresh_Token = await generateToken({userId:user._id},"30d",process.env.REFRESH_TOKEN_SECERT);
+res.cookie('refreshToken',refresh_Token,{
+    httpOnly:true,
+    path:'/auth/refreshToken',
+    maxAge:30 * 24 * 60 * 60 * 1000, // 30 days
+    
+
+
+
+});
+res.status(200).send({
+    message : "login success.",
+    access_Token,
+    user :{
+        _id:user._id,
+        name:user.name,
+
+        email:user.email,
+        picture:user.picture,
+        status:user.status,
+
+
+    }
+})
     } catch (error) {
         next(error);
     }
 }
 exports.logout=async(req,res,next)=>{
     try {
-        
+        res.clearCookie('refreshToken',{
+            path:'/auth/refreshToken'
+        });
+        res.status(200).send({
+            message : "logged out!"
+        })
         
     } catch (error) {
         next(error);
@@ -62,8 +94,32 @@ exports.logout=async(req,res,next)=>{
 }
 exports.refreshToken=async(req,res,next)=>{
     try {
+        const refresh_Token = req.cookies.refreshToken;
+        if(!refresh_Token){
+            throw createHttpError.Unauthorized("Please Login.");
+        }
+
+        
+        const check = await verifyToken(refresh_Token,process.env.REFRESH_TOKEN_SECERT);
+        const user = await findUser(check.userId);
+
+        const access_Token = await generateToken({userId:user._id},"1d",process.env.ACCESS_TOKEN_SECERT);
+
+
+        res.status(200).send({
+           
+            access_Token,
+            user :{
+                _id:user._id,
+                name:user.name,
+        
+                email:user.email,
+                picture:user.picture,
+                status:user.status,
         
         
+            }
+        })
     } catch (error) {
         next(error);
     }

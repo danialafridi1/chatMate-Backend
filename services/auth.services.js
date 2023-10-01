@@ -1,6 +1,7 @@
 const createHttpError = require("http-errors");
 const validator = require('validator');
 const {UserModel} = require('../models/index');
+const bcrypt = require('bcrypt')
 
 exports.createUser = async(userData)=>{
     const {name,email,picture,password,status} = userData;
@@ -61,3 +62,21 @@ const user =await new UserModel({
 return user;
 
 };
+
+exports.signUser = async(email,password)=>{
+
+const user = await UserModel.findOne({email:email.toLowerCase()}).lean();
+if(!user){
+    throw createHttpError.NotFound("Invalid Credentials")
+}
+//compare password
+let passwordMatches =  await bcrypt.compare(password,user.password);
+if(!passwordMatches){
+    throw createHttpError.NotFound("Invalid Credentials")
+  
+}
+return user;
+
+
+
+}

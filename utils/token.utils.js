@@ -16,3 +16,19 @@ exports.sign = async(payload,expireIn,secert)=>{
         })
     })
 }
+
+exports.verify = async(token,secert)=>{
+    return new Promise((resolve,reject)=>{
+        jwt.verify(token,secert,(error,payload)=>{
+            if(error){
+                logger.error(error)
+                resolve(null)
+            } else {
+resolve(payload)
+            }
+        })
+       
+        
+    })
+
+}
