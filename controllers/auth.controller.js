@@ -29,7 +29,7 @@ res.cookie('refreshToken',refresh_Token,{
 });
 res.status(201).send({
     message : "registered success.",
-    access_Token,
+    
     user :{
         _id:newUser._id,
         name:newUser.name,
@@ -37,6 +37,7 @@ res.status(201).send({
         email:newUser.email,
         picture:newUser.picture,
         status:newUser.status,
+        access_Token
 
 
     }
@@ -63,7 +64,7 @@ res.cookie('refreshToken',refresh_Token,{
 });
 res.status(200).send({
     message : "login success.",
-    access_Token,
+   
     user :{
         _id:user._id,
         name:user.name,
@@ -71,6 +72,7 @@ res.status(200).send({
         email:user.email,
         picture:user.picture,
         status:user.status,
+        access_Token
 
 
     }
@@ -108,7 +110,7 @@ exports.refreshToken=async(req,res,next)=>{
 
         res.status(200).send({
            
-            access_Token,
+            
             user :{
                 _id:user._id,
                 name:user.name,
@@ -116,6 +118,7 @@ exports.refreshToken=async(req,res,next)=>{
                 email:user.email,
                 picture:user.picture,
                 status:user.status,
+                access_Token
         
         
             }
