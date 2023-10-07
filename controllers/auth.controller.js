@@ -37,7 +37,7 @@ res.status(201).send({
         email:newUser.email,
         picture:newUser.picture,
         status:newUser.status,
-        access_Token
+        token:access_Token
 
 
     }
@@ -72,7 +72,7 @@ res.status(200).send({
         email:user.email,
         picture:user.picture,
         status:user.status,
-        access_Token
+        token:access_Token
 
 
     }
@@ -118,7 +118,7 @@ exports.refreshToken=async(req,res,next)=>{
                 email:user.email,
                 picture:user.picture,
                 status:user.status,
-                access_Token
+                token:access_Token
         
         
             }
