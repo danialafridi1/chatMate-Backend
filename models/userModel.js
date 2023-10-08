@@ -53,5 +53,5 @@ userScheme.pre('save',async function(next){
     }catch(error){next(error)}
 })
 
-const UserModel = mongoose.models.UserModel || mongoose.model("Users",userScheme);
+const UserModel = mongoose.models.UserModel || mongoose.model("UserModel",userScheme);
 module.exports = UserModel;
