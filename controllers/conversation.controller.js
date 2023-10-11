@@ -1,5 +1,5 @@
 const createHttpError = require("http-errors");
-const { doesConversationExist, createConversation, popluateConversation } = require("../services/conversation.services");
+const { doesConversationExist, createConversation, popluateConversation,getuserConversations } = require("../services/conversation.services");
 const { findUser } = require("../services/user.services");
 
 exports.create_open_conversation = async (req,res,next)=>{
@@ -38,4 +38,21 @@ if(existed_conversation){
     next(error);
 }
 
+}
+
+exports.getConversations = async(req,res,next)=>{
+    try {
+       const user_id = req.user.userId;
+       if(!user_id){
+        throw createHttpError.BadGateway("Something went wrong");
+    }
+       const conversations = await getuserConversations(user_id);
+       if(!conversations){
+        throw createHttpError.BadGateway("There is no conversation for this user");
+    }
+
+       res.status(200).json(conversations)
+    } catch (error) {
+        next(error);
+    }
 }

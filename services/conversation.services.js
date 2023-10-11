@@ -1,5 +1,6 @@
 const createHttpError = require("http-errors");
 const { ConversationModel, UserModel } = require("../models")
+const logger = require('../config/logger');
 
 
 exports.doesConversationExist = async(sender_id,receiver_id)=>{
@@ -46,4 +47,38 @@ exports.popluateConversation = async(id,fieldToPopulate,fiedlToRemove)=>{
             throw createHttpError.BadRequest("Oops... Something went wrong")
         }
          return populateConvo;
+}
+exports.getuserConversations = async(user_id)=>{
+    let conversations; 
+     await ConversationModel.find({
+        users :{
+            $elemMatch : {$eq:user_id}
+        },
+
+    })
+    .populate("users","-password")
+    .populate("admin","-password")
+    .populate("latestMessage")
+    .sort({updateAt:-1})
+    .then(async(result)=>{
+        result = await UserModel.populate(result,{
+            path: "latestMessage.sender",
+            select: "name email picture status" ,
+        });
+        conversations = result;
+    }).catch((err)=>{
+        logger.error(err);
+        throw createHttpError.BadRequest("Oops... Something went wrong") 
+    });
+
+    return conversations;
+}
+exports.updateLatestMessage = async(id,msg)=>{
+    const updateConvo = await ConversationModel.findByIdAndUpdate(id,{
+        latestMessage:msg
+    });
+    if(!updateConvo){
+        throw createHttpError.BadRequest("Oops... Something went wrong") 
+    }
+     return updateConvo;
 }
