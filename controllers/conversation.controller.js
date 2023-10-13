@@ -21,6 +21,7 @@ if(existed_conversation){
     let receiverUser = await findUser(receiver_id);
     let convoData = {
         name:receiverUser.name,
+        picture : receiverUser.picture,
         isGroup : false,
         users:[
             sender_id,receiver_id

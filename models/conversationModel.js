@@ -7,6 +7,12 @@ const ConversationScheme = mongoose.Schema({
         trim: true
 
     },
+    picture : {
+        type: String,
+        required : [true,"Picture is required"],
+        
+
+    },
     isGroup :{
         type : Boolean,
         required : true,
