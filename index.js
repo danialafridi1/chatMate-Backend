@@ -37,12 +37,18 @@ app.use(compresion());
 app.use(fileupload({
     useTempFiles : true
 }));
+const allowedOrigins = [
+    "http://192.168.10.3:3000",
+    "http://localhost:3000", 
+    
+  ];
 // useing cors
 app.use(cors(
     {
-        origin : "http://localhost:3000"
+        origin : allowedOrigins
     }
 ))
+
 // implement routes 
 app.use(routes);
 

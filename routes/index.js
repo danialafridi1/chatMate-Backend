@@ -10,6 +10,8 @@ router.use("/auth",authRoute);
 router.use("/conversation",conversationRoute);
 
 router.use("/message",messageRoute);
-
+router.get('/', (req, res) => {
+    res.status(200).send({message:"Welcome to chat mate"})
+});
 
 module.exports = router;
